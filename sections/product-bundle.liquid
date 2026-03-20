@@ -27,7 +27,16 @@
     </form>
   </div>
 {% endif %}
-
+{%  schema  %}  
+    {
+        "name": "Product Bundle",
+        "presets": [
+            {
+                "name": "Product Bundle"
+            }
+        ]
+    }
+{% endschema %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('add-bundle').addEventListener('click', function () {
