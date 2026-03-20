@@ -1,0 +1,60 @@
+{% assign bundle_products = product.metafields.custom.bundle_products.value %}
+
+{% if bundle_products != blank %}
+  <div class="bundle-section">
+    <h3>Frequently Bought Together</h3>
+
+    <form id="bundle-form">
+      <div class="bundle-items">
+        <!-- Main product -->
+        <label>
+          <input type="checkbox" checked disabled>
+          {{ product.title }}
+        </label>
+
+        <!-- Bundle products -->
+        {% for item in bundle_products %}
+          <label>
+            <input type="checkbox" name="bundle" value="{{ item.variants.first.id }}" checked>
+            {{ item.title }}
+          </label>
+        {% endfor %}
+      </div>
+
+      <button type="button" id="add-bundle">
+        Add Bundle to Cart
+      </button>
+    </form>
+  </div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('add-bundle').addEventListener('click', function () {
+            const items = [];
+            // Main product
+            items.push({
+                id: document.querySelector('[name="id"]').value,
+                quantity: 1
+            });
+            
+            // Bundle products
+            document.querySelectorAll('input[name="bundle"]:checked').forEach(el => {
+                items.push({
+                    id: el.value,
+                    quantity: 1
+                });
+            });
+            
+            fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items })
+            })
+            .then(res => res.json())
+            .then(() => {
+                window.location.href = '/cart';
+            });
+        });
+    });
+</script>
