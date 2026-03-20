@@ -27,6 +27,36 @@
     </form>
   </div>
 {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('add-bundle').addEventListener('click', function () {
+                const items = [];
+                // Main product
+                items.push({
+                    id: document.querySelector('[name="id"]').value,
+                    quantity: 1
+                });
+                
+                // Bundle products
+                document.querySelectorAll('input[name="bundle"]:checked').forEach(el => {
+                    items.push({
+                        id: el.value,
+                        quantity: 1
+                    });
+                });
+                
+                fetch('/cart/add.js', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items })
+                })
+                .then(res => res.json())
+                .then(() => {
+                    window.location.href = '/cart';
+                });
+            });
+        });
+    </script>
 {%  schema  %}  
     {
         "name": "Product Bundle",
@@ -37,33 +67,3 @@
         ]
     }
 {% endschema %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('add-bundle').addEventListener('click', function () {
-            const items = [];
-            // Main product
-            items.push({
-                id: document.querySelector('[name="id"]').value,
-                quantity: 1
-            });
-            
-            // Bundle products
-            document.querySelectorAll('input[name="bundle"]:checked').forEach(el => {
-                items.push({
-                    id: el.value,
-                    quantity: 1
-                });
-            });
-            
-            fetch('/cart/add.js', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items })
-            })
-            .then(res => res.json())
-            .then(() => {
-                window.location.href = '/cart';
-            });
-        });
-    });
-</script>
