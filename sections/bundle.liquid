@@ -1,6 +1,75 @@
 <section class="bundle-product" data-section="bundle-product">
-    <h2 class="bundle-product__title">{{ "The bundle products list" }}</h2>
+  <h2 class="bundle-product__title">
+    {{ section.settings.heading | default: "The bundle products list" }}
+  </h2>
+
+  <div class="bundle-product__list">
+    {% for block in section.blocks %}
+      {% assign product = all_products[block.settings.product] %}
+
+      {% if product %}
+        <div class="bundle-item">
+          <input 
+            type="checkbox" 
+            class="bundle-checkbox"
+            data-variant-id="{{ product.variants.first.id }}"
+          >
+
+          <img src="{{ product.featured_image | img_url: '200x' }}" alt="{{ product.title }}">
+
+          <h4>{{ product.title }}</h4>
+          <p>{{ product.price | money }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <button id="bundle-add-to-cart">Add Selected to Cart</button>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("bundle-add-to-cart");
+
+    button.addEventListener("click", function () {
+        const selectedItems = [];
+
+        document.querySelectorAll(".bundle-checkbox:checked").forEach((checkbox) => {
+        const variantId = checkbox.getAttribute("data-variant-id");
+
+        selectedItems.push({
+            id: variantId,
+            quantity: 1
+        });
+        });
+
+        if (selectedItems.length === 0) {
+        alert("Please select at least one product");
+        return;
+        }
+
+        fetch("/cart/add.js", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            items: selectedItems
+        })
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log("Added to cart:", data);
+        alert("Bundle added to cart!");
+        // Optional: window.location.href = "/cart";
+        })
+        .catch(error => {
+        console.error("Error:", error);
+        });
+    });
+    });
+</script>
+
 {%  schema  %}
     {
         "name": "Bundle product",
