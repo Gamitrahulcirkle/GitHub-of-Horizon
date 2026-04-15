@@ -4,7 +4,27 @@
 {%  schema  %}
     {
         "name": "Bundle product",
-        "settings": [],
+        "settings": [
+            {
+                "type": "text",
+                "id": "heading",
+                "label": "Heading"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "bundle-product-item",
+                "name": "Bundle product item",
+                "settings": [  
+                    {
+                        "type": "product",
+                        "id": "product",
+                        "label": "Product"
+                    }
+                 ]
+            
+            }
+        ],
         "presets": [
             {
                 "name": "Bundle Product"
