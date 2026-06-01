@@ -1,6 +1,10 @@
 
 
+<<<<<<< HEAD
 <script type="application/ld+json">
+=======
+<script type="application/ld+json" id="product-json-ld" data-product-json-ld>
+>>>>>>> bundleDev
   {{ closest.product | structured_data }}
 </script>
 
@@ -20,6 +24,13 @@
   %}
 {% endcapture %}
 
+<<<<<<< HEAD
+=======
+<h2 class="current_variant_title">  
+  {{ closest.product.variants |  map: 'title' | newline_to_br | escape }}
+</h2>
+
+>>>>>>> bundleDev
 {% capture additional_blocks %}
   {% content_for 'blocks' %}
 {% endcapture %}
@@ -67,8 +78,12 @@
               ref: 'productImage'
           }}
         </div>
+<<<<<<< HEAD
       {% endif %}
 
+=======
+      {% endif %}      
+>>>>>>> bundleDev
       {% liquid
         assign has_single_option = false
         if product.has_only_default_variant != true and product.options.size == 1

@@ -1,0 +1,382 @@
+<div class="mega-menu show_in_desktop">
+  <div class="new_mega_menu_content">
+    <div class="new_mega_menu_wrapper">
+      <div class="new_mega_menu_tabs">
+        <ul class="new_menu_tabs_bar">
+          {% for i in (1..3) %}
+            {% capture tabTitle %}tab_{{ i }}{% endcapture %}
+            <li
+              class="new_menu_tab_link {% if forloop.first %}current{% endif %}"
+              data-tab="tab-{{ i }}"
+            >
+              {{ block.settings[tabTitle] }}
+              <span class="new_menu_arrow">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7.5 5L12.5 10L7.5 15"
+                    stroke="#F5F2F1"
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+        {% comment %}
+          <ul class="new_menu_tabs_bar">
+
+            <li class="new_menu_tab_link current" data-tab="tab-1">Whey Protein
+              <span class="new_menu_arrow">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.5 5L12.5 10L7.5 15" stroke="#F5F2F1" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </li>
+            <li class="new_menu_tab_link" data-tab="tab-2">Bundles
+              <span class="new_menu_arrow">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.5 5L12.5 10L7.5 15" stroke="#F5F2F1" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </li>
+            <li class="new_menu_tab_link" data-tab="tab-3">Accessories
+              <span class="new_menu_arrow">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.5 5L12.5 10L7.5 15" stroke="#F5F2F1" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </li>
+          </ul>
+        {% endcomment %}
+      </div>
+      <div class="new_tab_content_wp">
+        <div class="new_tab_content current" id="new-tab-1">
+          <div class="new_tab_content_inn">
+            <div class="new_tab_content_left">
+              <ul class="new_tab_best_seller">
+
+                {% for prod in block.settings.product_list %}
+                  {% assign prod_mega = prod.metafields.custom.megamenu_products.value %}
+                  {% if prod_mega != blank %}
+                  {% comment %} <li class="{{ prod_mega.product_title | replace: ' ', '_' | replace: '&', '' | downcase }}" style="background-color: {{ prod_mega.background_color }};"> {% endcomment %}
+                   <li class="new_tab_best_seller_item">
+                      <a href="{{ prod.url }}">
+                        {% if prod_mega.tag != blank %}
+                          {% if prod.handle contains 'coffee' %}
+                              <span class="new_flavour_tag">New Flavour</span>
+                          {% else %}
+                              <span class="new_flavour_tag">{{ prod_mega.tag }}</span>
+                          {% endif %}
+                        {% endif %}
+                      
+                          <div class="new_pro_image">
+                              <div class="new_inner-img">
+                                  <img src="{{ prod_mega.desktop_product_image | img_url : 'master' }}" alt="{{  prod_mega.desktop_product_image.alt }}" class="desk-img">
+                                  <img src="{{ prod_mega.mobile_product_image | img_url : 'master' }}" alt="{{  prod_mega.mobile_product_image.alt }}" class="mob-img">
+                              </div>
+                          </div>
+                          <div class="new_pro_details">
+                              <div class="new_rating_star"> 
+                                  {% render 'review-star-custom'. product: prod %}
+                                  {% comment %} {% render 'junip-product-summary', product: prod %}  {% endcomment %}
+                              </div>
+                              <div class="new_pro_title">{{ prod_mega.product_title }}</div>
+                              <div class="new_pro_description">{% if prod_mega.description != blank %}{{ prod_mega.description }}{% else %}{{ prod.title }}{% endif %}</div>
+                          </div>
+                      </a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+            
+
+
+{% comment %}               
+                <li class="new_tab_best_seller_item">
+                  <a href="#" class="new_tab_best_seller_nlock">
+                    <span class="new_flavour_tag">best seller</span>
+                    <div class="new_pro_image">
+                      <div class="new_inner-img">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/8da1e2ca4a149d184b00a60012c4b250a0c9993d.png?v=1779958157"
+                          alt=""
+                          width="100%"
+                          height="100%"
+                        >
+                      </div>
+                    </div>
+                    <div class="new_pro_details">
+                      <div class="new_rating_star">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                          width="100%"
+                          height="100%"
+                        >
+                        <p>(1680)</p>
+                      </div>
+                      <h4 class="new_pro_title">Pure Unflavoured</h4>
+                      <p class="new_pro_description">Organic Whey Protein</p>
+                    </div>
+                  </a>
+                </li>
+                <li class="new_tab_best_seller_item">
+                  <a href="#" class="new_tab_best_seller_nlock">
+                    <span class="new_flavour_tag">best seller</span>
+                    <div class="new_pro_image">
+                      <div class="new_inner-img">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/94150aba25b24e2d2ce94912c8f518e18fe47433.png?v=1779958156"
+                          alt=""
+                          width="100%"
+                          height="100%"
+                        >
+                      </div>
+                    </div>
+                    <div class="new_pro_details">
+                      <div class="new_rating_star">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                          width="100%"
+                          height="100%"
+                        >
+                        <p>(1680)</p>
+                      </div>
+                      <h4 class="new_pro_title">MADAGASCAN VANILLA</h4>
+                      <p class="new_pro_description">Organic Whey Protein</p>
+                    </div>
+                  </a>
+                </li> {% endcomment %}
+
+              </ul>
+            </div>
+            <div class="new_tab_content_right">
+              <div class="new_tab_content_title">
+                <h3>Other Flavours</h3>
+              </div>
+              <div class="new_tab_flavours_wpr">
+                <ul class="new_tab_flavours_grid">
+                  <li class="new_tab_flavours_item">
+                    <a href="#" class="new_tab_flavours_block">
+                      <div class="new_pro_image">
+                        <div class="new_inner-img">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/0d0e0b47fdc65764e2fa7b91e25b39ceb2705a58.png?v=1779961140"
+                            alt=""
+                            width="100%"
+                            height="100%"
+                          >
+                        </div>
+                      </div>
+                      <div class="new_pro_details">
+                        <div class="new_rating_star">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                            width="100%"
+                            height="100%"
+                          >
+                          <p>(1680)</p>
+                        </div>
+                        <h4 class="new_pro_title">real coffee</h4>
+                        <p class="new_pro_description">Organic Whey Protein</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="new_tab_flavours_item">
+                    <a href="#" class="new_tab_flavours_block">
+                      <div class="new_pro_image">
+                        <div class="new_inner-img">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/2cb3a58d4ba232b514a98dd61a3d1f560d76fc6a.png?v=1779961138"
+                            alt=""
+                            width="100%"
+                            height="100%"
+                          >
+                        </div>
+                      </div>
+                      <div class="new_pro_details">
+                        <div class="new_rating_star">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                            width="100%"
+                            height="100%"
+                          >
+                          <p>(1680)</p>
+                        </div>
+                        <h4 class="new_pro_title">Cacao & Maca</h4>
+                        <p class="new_pro_description">Organic Whey Protein</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="new_tab_flavours_item">
+                    <a href="#" class="new_tab_flavours_block">
+                      <div class="new_pro_image">
+                        <div class="new_inner-img">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/bc4cca71ac696a6f8b8ef0549bbef6772ac426d3.png?v=1779961139"
+                            alt=""
+                            width="100%"
+                            height="100%"
+                          >
+                        </div>
+                      </div>
+                      <div class="new_pro_details">
+                        <div class="new_rating_star">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                            width="100%"
+                            height="100%"
+                          >
+                          <p>(1680)</p>
+                        </div>
+                        <h4 class="new_pro_title">cookies & cream</h4>
+                        <p class="new_pro_description">Organic Whey Protein</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="new_tab_flavours_item">
+                    <a href="#" class="new_tab_flavours_block">
+                      <div class="new_pro_image">
+                        <div class="new_inner-img">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/711a9066205e974b055eed5d1e1232018732d0f5.png?v=1779961139"
+                            alt=""
+                            width="100%"
+                            height="100%"
+                          >
+                        </div>
+                      </div>
+                      <div class="new_pro_details">
+                        <div class="new_rating_star">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                            width="100%"
+                            height="100%"
+                          >
+                          <p>(1680)</p>
+                        </div>
+                        <h4 class="new_pro_title">banana & lucuma</h4>
+                        <p class="new_pro_description">Organic Whey Protein</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="new_tab_content" id="new-tab-2">
+          <div class="new_tab_content_inn">
+            <div class="new_tab_content_left">
+              <ul class="new_tab_best_seller">
+                <li class="new_tab_best_seller_item">
+                  <a href="#" class="new_tab_bundle_block">
+                    <div class="new_tab_bundle_tag">
+                      <span>-20%</span>
+                    </div>
+                    <div class="new_tab_bundle_block_img">
+                      <img
+                        src="https://cdn.shopify.com/s/files/1/0988/6820/files/Group_19377.png?v=1779962174"
+                        width="100%"
+                        height="100%"
+                      >
+                    </div>
+                    <div class="new_tab_bundle_block_info">
+                      <h3>Build your own bundle.</h3>
+                      <ul>
+                        <li>Mix any flavours</li>
+                        <li>Save 20%</li>
+                      </ul>
+                    </div>
+                  </a>
+                </li>
+                <li class="new_tab_best_seller_item">
+                  <a href="#" class="new_tab_best_seller_nlock">
+                    <span class="new_flavour_tag">best seller</span>
+                    <div class="new_pro_image">
+                      <div class="new_inner-img">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Group_19376.png?v=1779963442"
+                          alt=""
+                          width="100%"
+                          height="100%"
+                        >
+                      </div>
+                    </div>
+                    <div class="new_pro_details">
+                      <div class="new_rating_star">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                          width="100%"
+                          height="100%"
+                        >
+                        <p>(1680)</p>
+                      </div>
+                      <h4 class="new_pro_title">Pure Unflavoured</h4>
+                      <p class="new_pro_description">Organic Whey Protein</p>
+                    </div>
+                  </a>
+                </li>
+                <li class="new_tab_best_seller_item">
+                  <a href="#" class="new_tab_best_seller_nlock">
+                    <span class="new_flavour_tag">best seller</span>
+                    <div class="new_pro_image">
+                      <div class="new_inner-img">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Group_19376.png?v=1779963442"
+                          alt=""
+                          width="100%"
+                          height="100%"
+                        >
+                      </div>
+                    </div>
+                    <div class="new_pro_details">
+                      <div class="new_rating_star">
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0988/6820/files/Container.png?v=1779958308"
+                          width="100%"
+                          height="100%"
+                        >
+                        <p>(1680)</p>
+                      </div>
+                      <h4 class="new_pro_title">Pure Unflavoured</h4>
+                      <p class="new_pro_description">Organic Whey Protein</p>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.new_menu_tab_link');
+    const contents = document.querySelectorAll('.new_tab_content');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const tabId = this.getAttribute('data-tab');
+
+        tabs.forEach(function (item) {
+          item.classList.remove('current');
+        });
+
+        contents.forEach(function (content) {
+          content.classList.remove('current');
+        });
+
+        this.classList.add('current');
+
+        const activeContent = document.getElementById('new-' + tabId);
+        if (activeContent) {
+          activeContent.classList.add('current');
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,339 @@
+{% comment %}
+  JS-load cart markup without bloat of a full layout.
+
+  This is used in both the mini cart drawer and cart page.
+  When a quantity is changed, this file is scraped and data-products
+  is fully replaced to account for possible cart discounts changing
+
+  The cart-wide discount div also replaces what is originally in the cart
+  as it can change anytime a cart-item changes
+{% endcomment %}
+{% assign boxes_displayed = '' | split: ',' %}
+{% assign box_saving = 0 %}
+{% for cart_attr in cart.attributes %}
+  {% if cart_attr[0] contains '_box' and cart_attr[0] contains 'saving' %}
+    {% assign box_saving = cart_attr[1] | plus: box_saving %}
+  {% endif %}
+{% endfor %}
+{% assign hide_vanila_upsell = false %}
+{% assign hide_sachet_upsell = false %}
+{% assign scoop_eligible = false %}
+
+{% assign show_free_scoop = false %}
+{% if settings.scoop_product != blank %}
+  {% assign prod = settings.scoop_product %}
+  {% assign bdl_prod = settings.bdl_prod %}
+  {% assign scoop_contain = false %}
+
+  {% assign scoop_prod = true %}
+  {% assign check_specific_size = false %}
+  {% assign check_sachet_item = false %}
+  {% assign free_scoop_enable = false %}
+  {% assign discovery_pack_enable = false %}
+
+  {% for item in cart.items %}
+    {% assign handle = item.product.handle %}
+    
+    {% if item.product.handle == 'recycled-measuring-scoop' %}
+      {% assign scoop_prod = false %}
+    {% endif %}
+    {% if item.product.id == '1644637454379' %}
+      {% assign scoop_prod = false %}
+    {% endif %}   
+    {%- if item.properties._box
+      or item.product.handle == 'pure-vanilla-bundle'
+      or item.product.handle == 'taste-them-all-bundle'
+      or item.product.handle == 'choco-lover-s-bundle'
+      or item.product.handle == 'whey-protein-discovery-pack'
+    -%}
+      {% assign hide_vanila_upsell = true %}
+      {% comment %} {% assign hide_sachet_upsell = true %} {% endcomment %}
+    {% endif %}
+
+    {% assign free_scoop_for_specific_product = false %}
+
+    {% if item.product.handle == settings.vanila_upsell.handle %}
+      {% assign hide_vanila_upsell = true %}
+    {% endif %}
+
+    {% if item.product.handle == settings.sachet_vanila_upsell.handle %}
+      {% assign hide_sachet_upsell = true %}
+    {% endif %}
+
+    {% if item.id == prod.selected_or_first_available_variant.id %}
+      {% assign scoop_contain = true %}
+    {% endif %}  
+    
+    {% for option in item.options_with_values %}
+      {% if option.name == 'Size' %}
+        {% case option.value %}
+          {% when '1.2kg', '400g', '2 x 1.2kg', '4 x 1.2kg', '600g', '3 x 600g', '5 x 600g', '10 x 600g'  %}
+            {% assign free_scoop_enable = true %}
+            {% comment %} {% assign check_specific_size = true %} {% endcomment %}
+            {% comment %} {% assign hide_sachet_upsell = true %} {% endcomment %}
+        {% endcase %}
+      {% endif %}
+    {% endfor %}
+
+    {% if 
+      handle == 'build-your-own-bundle' or
+      handle == 'taste-them-all-bundle' or
+      handle == 'choco-lover-s-bundle' or
+      handle == 'pure-vanilla-bundle'
+    %}
+      {% assign check_specific_size = true %}
+    {% endif %}
+
+    {% comment %} Check sachet and flavour product handle: start {% endcomment %}
+     {% if 
+      handle == 'organic-whey-protein' or
+      handle == 'organic-whey-protein-cookies-cream' or
+      handle == 'organic-whey-protein-madagascan-vanilla' or
+      handle == 'organic-whey-protein-raw-cacao-and-maca' or
+      handle == 'organic-whey-protein-banana-lucuma' or
+      handle == 'organic-whey-protein-real-coffee'
+    %}
+      {% if item.properties._box %}
+        {% comment %}
+          {% assign discovery_pack_enable = true %}
+          Disable Free sachet products for the bundles product: Start 
+        {% endcomment %}
+        {% assign check_sachet_item = true %} 
+      {% endif %}
+    {% endif %}
+    
+    {% if 
+      handle == 'organic-whey-protein-cookies-cream-one-per-flavour-25g' or
+      handle == 'organic-whey-protein-madagascan-vanilla-one-per-flavour-25g' or
+      handle == 'organic-whey-protein-pure-unflavoured-one-per-flavour-25g' or
+      handle == 'organic-whey-protein-chocolate-cacao-maca-one-per-flavour-25g' or
+      handle == 'organic-whey-protein-banana-lucuma-one-per-flavour-25g' or
+      handle == 'organic-whey-protein-coffee-one-per-flavour-25g'
+    %}
+      
+      {% if item.properties == blank %}
+        {% assign check_sachet_item = true %}
+      {% endif %}
+    {% endif %}
+
+    {% if 
+      handle == 'organic-whey-protein-cookies-cream-sachets' or
+      handle == 'organic-whey-protein-madagascan-vanilla-sachets' or
+      handle == 'organic-whey-protein-pure-unflavoured-sachets' or
+      handle == 'organic-whey-protein-chocolate-cacao-maca-sachets' or
+      handle == 'organic-whey-protein-banana-lucuma-sachets' or
+      handle == 'organic-whey-protein-coffee-sachets'
+    %}
+      
+      {% comment %} {% if item.properties == blank %}
+        {% assign check_sachet_item = true %}
+      {% endif %}     {% endcomment %}
+      
+      {% if item.properties._box %}
+        {% assign discovery_pack_enable = true %}
+        {% comment %} Disable Free sachet products for the bundles product: Start {% endcomment %}
+        {% assign check_sachet_item = true %} 
+      {% endif %}
+    {% endif %}
+
+  {% comment %} {% if
+    handle == 'organic-whey-protein-cookies-cream-sachets' or
+    handle == 'organic-whey-protein-madagascan-vanilla-sachets' or
+    handle == 'organic-whey-protein-pure-unflavoured-sachets' or
+    handle == 'organic-whey-protein-chocolate-cacao-maca-sachets' or
+    handle == 'organic-whey-protein-banana-lucuma-sachets' or
+    handle == 'organic-whey-protein-coffee-sachets'
+  %}          
+    {% if line_item.properties == blank %}
+      {% assign sachetItemDis = true %}
+    {% endif %}          
+  {% endif %} {% endcomment %}
+    {% comment %} Check sachet product handle: end {% endcomment %}
+
+    {% if check_specific_size %}
+      {% assign free_scoop_for_specific_product = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} {% if free_scoop_for_specific_product %}
+  {% assign scoop_prod = true %}
+{% else %}    
+  {% assign scoop_prod = false %}  
+{% endif %} {% endcomment %}
+{% if free_scoop_enable or check_specific_size %}
+  {% assign scoop_prod = true %}
+{% else %}  
+  {% assign scoop_prod = false %}
+{% endif %}
+
+{% layout none %}
+
+<div
+  class="cart__items"
+  data-count="{{ cart.item_count }}"
+  {% if cart.total_discounts > 0 %}
+    data-cart-savings="{{ cart.total_discounts }}"
+  {% endif %}
+  data-cart-subtotal="{{ cart.total_price }}"
+  data-cart-original-total="{{ cart.original_total_price }}"
+>
+ 
+  {% for item in cart.items %}
+    {%- if item.properties._box -%}
+      {% assign show_free_scoop = true %}
+
+      {%- unless boxes_displayed contains item.properties._box -%}
+        {%- assign boxes_displayed = item.properties._box | concat: boxes_displayed -%}
+        {%- render 'juo-box-cart-item',
+          item: item,
+          cart: cart,
+          current_box: item.properties._box,
+          parent_product_handle: item.properties._parent_product_handle
+        -%}
+      {%- endunless -%}
+    {%- else -%}
+      {%- render 'cart-item', product: item, check_sachet_item:check_sachet_item -%}
+    {%- endif -%}
+  {% endfor %}
+
+  {% comment %} Cart threshold : start {% endcomment %}   
+  {% assign checkCartTotal = cart.original_total_price | money_without_currency | plus: 0 %}  
+  {% comment %} {% assign checkCartTotal = cart.total_price | money_without_currency | plus: 0 %}   {% endcomment %}
+  {% if settings.cart_threshold_amnt != blank %}
+    {% assign threshold = settings.cart_threshold_amnt | plus: 0 %}      
+    {% if checkCartTotal >= threshold and check_sachet_item == false %}      
+      {% render 'sachet_upsell_bundle' %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Cart threshold : end {% endcomment %}
+
+  {% comment %} vanila upsell start {% endcomment %}
+  {% assign vanila_upsell = settings.vanila_upsell %}
+
+  {% if scoop_contain %}
+    {% if cart.item_count > 2 %}
+      {% assign hide_vanila_upsell = true %}
+    {% endif %}
+  {% else %}
+    {% if cart.item_count > 1 %}
+      {% assign hide_vanila_upsell = true %}
+    {% endif %}
+  {% endif %}
+
+  {% comment %} {% assign hide_vanila_upsell = true %} {% endcomment %}
+
+  {% unless hide_vanila_upsell %}
+    <div class="vanila_upsell new-scoop-format" id="{{ vanila_upsell.selected_or_first_available_variant.id  }}">
+      <p class="main-head">Join Thousands Who Love Vanilla</p>
+
+      <div class="main-div">
+        {% if settings.vanila_upsell_img != blank %}
+          <img src="{{ settings.vanila_upsell_img | img_url: 'master' }}" alt="{{ settings.vanila_upsell_img.alt }}">
+        {% endif %}
+        <div class="detail">
+          <div class="scoop_title">
+            <p>{{ vanila_upsell.metafields.custom.megamenu_products.value.product_title }}</p>
+          </div>
+          <p class="variant">{{ vanila_upsell.selected_or_first_available_variant.title }}</p>
+          <div class="scoop_price">
+            {{ vanila_upsell.price | money }}
+            <div class="plus_svg" style="position:absolute;top:-15px;right:-10px;">
+              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 50C0 22.3858 22.3858 0 50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50Z" fill="#487E89"></path>
+                <path d="M29.1667 54.2017V45.7983H45.5702V29.1667H54.2544V45.7983H70.8333V54.2017H54.2544V70.8333H45.5702V54.2017H29.1667Z" fill="#FDF9F5"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="bottom-head">Add our most-loved flavour and we'll ship your whole order for free.</p>
+    </div>
+  {% endunless %}
+  {% comment %} vanila upsell end {% endcomment %}
+
+  {% comment %} Sachet Upsell - All flavours bundle start {% endcomment %}
+    {% assign sachet_vanila_upsell = settings.sachet_vanila_upsell %}
+    {% if discovery_pack_enable %}
+      {% assign hide_sachet_upsell = true %}
+    {% endif %}
+    
+    {% unless hide_sachet_upsell %}
+      <div class="vanila_upsell new-scoop-format discovery_pack_upsell" id="{{ sachet_vanila_upsell.selected_or_first_available_variant.id  }}">
+        <p class="main-head">TASTE OUR FULL RANGE</p>
+
+        <div class="main-div">
+          {% if settings.sachet_vanila_upsell_img != blank %}
+            <img src="{{ settings.sachet_vanila_upsell_img | img_url: 'master' }}" alt="{{ settings.sachet_vanila_upsell_img.alt }}">
+          {% endif %}
+          <div class="detail">
+            <div class="scoop_title">
+              <p>{{ sachet_vanila_upsell.metafields.custom.megamenu_products.value.product_title | default:"Discovery Pack (All Flavours)" }}</p>
+            </div>
+            <p class="variant">{{ sachet_vanila_upsell.selected_or_first_available_variant.title }}</p>
+            <div class="scoop_price">
+              {{ sachet_vanila_upsell.price | money }}
+              <div class="plus_svg" style="position:absolute;top:-15px;right:-10px;">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 50C0 22.3858 22.3858 0 50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50Z" fill="#487E89"></path>
+                  <path d="M29.1667 54.2017V45.7983H45.5702V29.1667H54.2544V45.7983H70.8333V54.2017H54.2544V70.8333H45.5702V54.2017H29.1667Z" fill="#FDF9F5"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="bottom-head">Add our sachet bundle to find your favourite: 6 delicious wheys, pre-portioned and perfect for on the go.</p>
+      </div>
+    {% endunless %}
+  {% comment %} Sachet Upsell - All flavours bundle end {% endcomment %}
+
+  {% if settings.scoop_product != blank %}
+    {% if scoop_prod %}
+    <div
+      class="scoop_prod"
+      id="{% if show_free_scoop %}{{ bdl_prod.selected_or_first_available_variant.id }}{% else %}{{ prod.selected_or_first_available_variant.id }}{% endif %}" {{ scoop_prod }} >
+      <div class="scoop_title">
+        {% if settings.scoop_product_img != blank %}
+          <img src="{{ settings.scoop_product_img | img_url: 'master'}}" alt="{{ settings.scoop_product_img.alt }}">
+        {% endif %}
+        <div class="scoop_title_text">
+          {% if settings.head_txt != blank %}
+            <p class="scoop_title_head">{{ settings.head_txt }}</p>
+          {% endif %}
+          {% if settings.subhead_txt != blank %}
+            <p class="scoop_title_subhead">{{ settings.subhead_txt }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="scoop_price">
+        {% comment %} {{ prod.price | money }} {% endcomment %}
+        Free
+        <div class="plus_svg">
+          <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 50C0 22.3858 22.3858 0 50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50Z" fill="currentColor"></path>
+            <path d="M29.1667 54.2017V45.7983H45.5702V29.1667H54.2544V45.7983H70.8333V54.2017H54.2544V70.8333H45.5702V54.2017H29.1667Z" fill="#FDF9F5"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  {% endif %}
+
+
+
+</div>
+<div class="cart__discounts hide {% if cart.cart_level_discount_applications == blank %} hide{% endif %}">
+  <div class="cart__item-sub cart__item-row">
+    <div>{{ 'cart.general.discounts' | t }}</div>
+    <div class="text-right">
+      {% for cart_discount in cart.cart_level_discount_applications %}
+        <div>
+          {{ cart_discount.title }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% comment %} (-{{ cart_discount.total_allocated_amount | money }}) {% endcomment %}
