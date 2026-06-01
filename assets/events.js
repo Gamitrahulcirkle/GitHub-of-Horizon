@@ -39,18 +39,10 @@ export class VariantSelectedEvent extends Event {
    * @param {string} resource.id - The option value id
    */
   constructor(resource) {
-<<<<<<< HEAD
-=======
-    console.log('dispatching variant selected event for', resource);
->>>>>>> bundleDev
     super(ThemeEvents.variantSelected, { bubbles: true });
     this.detail = {
       resource,
     };
-<<<<<<< HEAD
-=======
-    console.log('dispatching variant selected event for', this.detail);
->>>>>>> bundleDev
   }
 }
 

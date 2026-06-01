@@ -9,11 +9,7 @@ export class DeclarativeShadowElement extends HTMLElement {
   connectedCallback() {
     if (!this.shadowRoot) {
       const template = this.querySelector(':scope > template[shadowrootmode="open"]');
-<<<<<<< HEAD
 
-=======
-      console.log('found template', template);
->>>>>>> bundleDev
       if (!(template instanceof HTMLTemplateElement)) return;
 
       const shadow = this.attachShadow({ mode: 'open' });
