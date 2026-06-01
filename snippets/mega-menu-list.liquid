@@ -14,7 +14,7 @@
   @example
   {% render 'mega-menu-list', parent_link: link, id: 'MegaMenuList-1', grid_columns_count: 6, menu_content_type: 'featured_products' %}
 {%- enddoc -%}
-
+{{ menu_content_type }}
 {% liquid
   comment
     open_column_span tracks when a vertical column in the mega menu is open. Links will be stacked
@@ -41,6 +41,8 @@
   endif
 
   if menu_content_type == 'collection_images'
+  echo parent_link.type
+
     assign collection_links = parent_link.links | where: 'type', 'collection_link'
     assign catalog_links = parent_link.links | where: 'type', 'catalog_link'
     assign collection_list_links = parent_link.links | where: 'type', 'collections_link'
@@ -50,6 +52,8 @@
   endif
 
   if menu_content_type == 'featured_collections'
+  echo parent_link.type
+
     if parent_link.type == 'collection_link'
       assign collection_handles = parent_link.object.handle | append: ','
     elsif parent_link.type == 'catalog_link' or parent_link.type == 'collections_link'
@@ -62,6 +66,7 @@
   endif
 
   if menu_content_type == 'featured_products'
+  echo parent_link.type
     if parent_link.type == 'collection_link'
       assign collection_object = parent_link.object
     elsif parent_link.type == 'catalog_link' or parent_link.type == 'collections_link'

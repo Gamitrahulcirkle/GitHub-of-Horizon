@@ -60,6 +60,8 @@ export class QuantitySelectorComponent extends Component {
    * @returns {{canAdd: boolean, maxQuantity: number|null, cartQuantity: number, quantityToAdd: number}} Validation result
    */
   canAddToCart() {
+    console.log(this);
+    console.log(this.getCurrentValues());
     const { max, cartQuantity, value } = this.getCurrentValues();
     const quantityToAdd = value;
     const wouldExceedMax = max !== null && cartQuantity + quantityToAdd > max;
@@ -132,6 +134,7 @@ export class QuantitySelectorComponent extends Component {
    * @returns {{min: number, max: number|null, step: number, value: number, cartQuantity: number}}
    */
   getCurrentValues() {
+    console.log(this.refs);
     const { quantityInput } = this.refs;
 
     return {

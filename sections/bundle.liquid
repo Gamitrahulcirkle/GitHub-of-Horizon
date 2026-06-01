@@ -1,4 +1,4 @@
-<section class="bundle-product" data-section="bundle-product">
+{% comment %} <section class="bundle-product" data-section="bundle-product">
   <h2 class="bundle-product__title">
     {{ section.settings.heading | default: "The bundle products list" }}
   </h2>
@@ -25,51 +25,136 @@
   </div>
 
   <button id="bundle-add-to-cart">Add Selected to Cart</button>
-</section>
+</section> {% endcomment %}
+
+<bundle-component>
+  <section class="bundle-product" data-section="bundle-product">
+    
+    <h2 class="bundle-product__title">
+      {{ section.settings.heading | default: "The bundle products list" }}
+    </h2>
+
+    <div class="bundle-product__list">
+      {% for block in section.blocks %}
+        {% assign product = all_products[block.settings.product] %}
+
+        {% if product %}
+          <div class="bundle-item">
+            <!-- Checkbox with variant ID -->
+            <input 
+              type="checkbox"
+              class="bundle-checkbox"
+              id="bundle-{{ forloop.index }}"
+              data-variant-id="{{ product.variants.first.id }}"
+            >
+            <!-- Product Info -->
+            <label for="bundle-{{ forloop.index }}" class="bundle-item__content">              
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | image_url: width: 200 }}" 
+                  alt="{{ product.title }}"
+                  class="bundle-item__image"
+                >
+              {% endif %}
+              <div class="bundle-item__info">
+                <h4 class="bundle-item__title">{{ product.title }}</h4>
+                <p class="bundle-item__price">{{ product.price | money }}</p>
+              </div>
+            </label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Add Bundle Button -->
+    <button 
+      id="bundle-add-to-cart"
+      class="bundle-add-to-cart button button--primary"
+      type="button"
+    >
+      Add Selected Bundle
+    </button>
+
+  </section>
+</bundle-component>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("bundle-add-to-cart");
-
-    button.addEventListener("click", function () {
-        const selectedItems = [];
-
-        document.querySelectorAll(".bundle-checkbox:checked").forEach((checkbox) => {
-        const variantId = checkbox.getAttribute("data-variant-id");
-
-        selectedItems.push({
-            id: variantId,
-            quantity: 1
-        });
-        });
-
-        if (selectedItems.length === 0) {
-        alert("Please select at least one product");
-        return;
+        class BundleComponent extends HTMLElement {
+        connectedCallback() {
+            this.button = this.querySelector('#bundle-add-to-cart');
+            this.button?.addEventListener('click', this.handleClick.bind(this));
         }
 
-        fetch("/cart/add.js", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            items: selectedItems
-        })
-        })
-        .then(response => response.json())
-        .then(data => {
-        console.log("Added to cart:", data);
-        alert("Bundle added to cart!");
-        // Optional: window.location.href = "/cart";
-        })
-        .catch(error => {
-        console.error("Error:", error);
-        });
-    });
+        handleClick() {
+            const selectedItems = [];
+
+            this.querySelectorAll('.bundle-checkbox:checked').forEach((checkbox) => {
+            const variantId = checkbox.dataset.variantId;
+
+            if (variantId) {
+                selectedItems.push({
+                variantId: variantId,
+                quantity: 1
+                });
+            }
+            });
+
+            if (selectedItems.length === 0) {
+            alert('Select at least one product');
+            return;
+            }
+
+            // 🔥 KEY PART: find nearest product form
+            const productForm = this.closest('product-form-component');
+
+            if (!productForm) {
+           // console.error('ProductFormComponent not found');
+            return;
+            }
+
+            // 🔥 Use internal batch method
+            if (typeof productForm['#processBatchAddToCart'] === 'function') {
+            // ❌ won't work (private method)
+            }
+
+            // ✅ Correct approach: dispatch event instead
+            productForm.dispatchEvent(
+            new CustomEvent('bundle:add', {
+                detail: { items: selectedItems },
+                bubbles: true
+            })
+            );
+        }
+    }
+
+    customElements.define('bundle-component', BundleComponent);
     });
 </script>
-
+<style>
+    .bundle-product__list {
+        display: flex;
+        justify-content: center;
+        gap: 11px;
+        margin: 20px 0;
+    }
+    .bundle-item {
+        padding: 10px !important;
+        background: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 12px;
+        text-align: center;
+        color: #000000;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
 {%  schema  %}
     {
         "name": "Bundle product",

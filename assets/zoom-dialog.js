@@ -117,8 +117,9 @@ export class ZoomDialog extends Component {
    * @param {Event} event - The scroll event.
    */
   handleScroll = debounce(async () => {
+    console.log(`Dialog scrolled, determining most visible media element...${this.refs} media elements to check.`);
     const { media, thumbnails } = this.refs;
-
+    
     const mostVisibleElement = await getMostVisibleElement(media);
     const activeIndex = media.indexOf(mostVisibleElement);
     const targetThumbnail = thumbnails.children[activeIndex];
@@ -128,7 +129,7 @@ export class ZoomDialog extends Component {
     Array.from(thumbnails.querySelectorAll('button')).forEach((button, i) => {
       button.setAttribute('aria-selected', `${i === activeIndex}`);
     });
-
+    console.log(`Most visible element index: ${activeIndex}, updating active thumbnail.`);
     this.loadHighResolutionImage(mostVisibleElement);
     this.dispatchEvent(new ZoomMediaSelectedEvent(activeIndex));
   }, 50);

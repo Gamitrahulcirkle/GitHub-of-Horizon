@@ -31,7 +31,7 @@ export default class VariantPicker extends Component {
 
   connectedCallback() {
     super.connectedCallback();
-    const fieldsets = /** @type {HTMLFieldSetElement[]} */ (this.refs.fieldsets || []);
+    const fieldsets = /** @type {HTMLFieldSetElement[]} */ ( this.refs.fieldsets || [] );
 
     fieldsets.forEach((fieldset) => {
       const radios = Array.from(fieldset?.querySelectorAll('input') ?? []);
